@@ -36,15 +36,13 @@ export class ScatterComponent implements OnInit {
 
   private drawPlot(): void {
 
-    // create a list of keys
-    var keys = this.data.map((data:MyData) => data.Framework)
+    const keys = this.data.map((data:MyData) => data.Framework)
 
-    // Usually you have a color scale in your chart already
-    var color = d3.scaleOrdinal()
+    const color = d3.scaleOrdinal()
       .domain(keys)
       .range(d3.schemeSet2);
 
-    var Tooltip = d3.select("figure#scatter")
+    const Tooltip = d3.select("figure#scatter")
       .append("div")
       .style("opacity", 0)
       .attr("class", "tooltip")
@@ -55,8 +53,7 @@ export class ScatterComponent implements OnInit {
       .style("padding", "5px")
       .style("position", "absolute")
 
-    // Three function that change the tooltip when user hover / move / leave a cell
-    var mouseover = function(e:MouseEvent, data: MyData) {
+    const mouseover = (e:MouseEvent, data: MyData) => {
       console.log(e.target);
       Tooltip
         .style("opacity", 1)
@@ -65,13 +62,13 @@ export class ScatterComponent implements OnInit {
         .style("stroke", "black")
         .style("opacity", 1);
     }
-    var mousemove = function(e:MouseEvent, data: MyData) {
+    const mousemove = (e:MouseEvent, data: MyData) => {
       Tooltip
         .html("The exact value of<br>this cell is: " + data.Framework)
         .style("left", (e.pageX + 20) + "px")
         .style("top", (e.pageY) + "px");
     }
-    var mouseleave = function(e:MouseEvent, data: MyData) {
+    const mouseleave = (e:MouseEvent, data: MyData) => {
       Tooltip
         .style("opacity", 0)
         .style("display", "none");
@@ -105,13 +102,13 @@ export class ScatterComponent implements OnInit {
         .attr("cy",  (d: MyData) => y(d.Stars))
         .attr("r", 3)
         .style("opacity", .5)
-        .style("fill", function(d: MyData, index: number) : string { return color(d.Framework) as string})
+        .style("fill", (d: MyData, index: number) : string => color(d.Framework) as string)
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave);
 
 
-    var legendBox = d3.select("figure#legend")
+    const legendBox = d3.select("figure#legend")
       .append("svg")
         .attr("width", 300)
         .attr("height", 300)
@@ -128,15 +125,15 @@ export class ScatterComponent implements OnInit {
       .append("circle")
         .style("opacity", .5)
         .attr("cx", 100)
-        .attr("cy", function(d:string,i:number){ return 100 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("cy", (d:string,i:number) =>  100 + i*25) // 100 is where the first dot appears. 25 is the distance between dots
         .attr("r", 7)
-        .style("fill", function(d: string, index: number) : string { return color(d) as string})
-        .on("mouseover", function(e: MouseEvent, d:string) {
+        .style("fill", (d: string, index: number) : string =>  color(d) as string)
+        .on("mouseover", (e: MouseEvent, d:string) => {
           d3.select(e.currentTarget as d3.BaseType)
             .style("stroke", "black")
             .style("opacity", 1);
         })
-        .on("mouseleave",  function(e: MouseEvent, d:string) {
+        .on("mouseleave", (e: MouseEvent, d:string) => {
           d3.select(e.currentTarget as d3.BaseType)
             .style("stroke", "none")
             .style("opacity", .5);
@@ -148,9 +145,9 @@ export class ScatterComponent implements OnInit {
       .enter()
       .append("text")
         .attr("x", 120)
-        .attr("y", function(d:string,i:number){ return 100 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("y", (d:string,i:number) => 100 + i*25) // 100 is where the first dot appears. 25 is the distance between dots
         .style("fill", "black")
-        .text(function(d:string){ return d})
+        .text((d:string) => d)
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle");
 
