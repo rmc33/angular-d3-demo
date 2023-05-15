@@ -7,6 +7,7 @@ interface MyData {
   Released: number;
 }
 
+
 @Component({
   selector: 'app-scatter',
   templateUrl: './scatter.component.html',
@@ -33,6 +34,8 @@ export class ScatterComponent implements OnInit {
     .append("g")
     .attr("transform", "translate(" + this.margin + "," + this.margin + ")");
   }
+
+  private keySelected: Map<string, boolean> = new Map<string,boolean>();
 
   private drawPlot(): void {
 
@@ -128,18 +131,51 @@ export class ScatterComponent implements OnInit {
         .attr("cy", (d:string,i:number) =>  100 + i*25) // 100 is where the first dot appears. 25 is the distance between dots
         .attr("r", 7)
         .style("fill", (d: string, index: number) : string =>  color(d) as string)
-        .on("mouseover", (e: MouseEvent, d:string) => {
+        .style("stroke", "black")
+        .on("mouseover", (e: MouseEvent, f:string) => {
+          if (this.keySelected.get(f) === true) {
+            return;
+          }
           d3.select(e.currentTarget as d3.BaseType)
-            .style("stroke", "black")
             .style("opacity", 1);
+          dots.selectAll("circle").filter((d:MyData) : boolean => {
+            return d.Framework === f;
+          }).style("opacity", 1)
+            .style("stroke", "black");
         })
-        .on("mouseleave", (e: MouseEvent, d:string) => {
+        .on("mouseleave", (e: MouseEvent, f:string) => {
+          if (this.keySelected.get(f) === true) {
+            return;
+          }
           d3.select(e.currentTarget as d3.BaseType)
-            .style("stroke", "none")
             .style("opacity", .5);
+          dots.selectAll("circle").filter((d:MyData) : boolean => {
+            return d.Framework === f;
+          }).style("opacity", .5)
+            .style("stroke", "none");
+        })
+        .on('click', (e: MouseEvent, f:string) => {
+          if (this.keySelected.get(f) === true) {
+            console.log("setting " + f + " color " + color(f) as string);
+            d3.select(e.currentTarget as d3.BaseType)
+              .style("fill", color(f) as string);
+            this.keySelected.set(f, false);
+            dots.selectAll("circle").filter((d:MyData) : boolean => {
+              return d.Framework === f;
+            }).style("fill", color(f) as string)
+              .style("stroke", "black");
+          }
+          else {
+            d3.select(e.currentTarget as d3.BaseType)
+              .style("fill", "white");
+            this.keySelected.set(f, true);
+            dots.selectAll("circle").filter((d:MyData) : boolean => {
+              return d.Framework === f;
+            }).style("fill", "none")
+              .style("stroke", "none");
+          }
         });
   
-
     legendBox.selectAll("mylabels")
       .data(keys)
       .enter()
